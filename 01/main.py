@@ -1,62 +1,98 @@
 #!/usr/bin/env python
+"""Day 01 of 2023 Advent of Code."""
 
-import os, re
+import dataclasses
+import os
+import re
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 SAMPLE_DATA = True
+CALIBRATION_DOC = None
 
-calibration_doc = None
+STRINGS_TO_NUMBERS = {
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+}
+
 with open(
-    os.path.join(__location__, f'{"sample" if SAMPLE_DATA else "input"}.txt'), "r"
+    os.path.join(__location__, f'{"sample" if SAMPLE_DATA else "input"}.txt'),
+    "r",
+    encoding="utf-8",
 ) as f:
-    calibration_doc = f.read().splitlines()
+    CALIBRATION_DOC = f.read().splitlines()
 
 
-def word_to_int(number_word: str | int) -> int:
-    match number_word:
-        case "one":
-            return 1
-        case "two":
-            return 2
-        case "three":
-            return 3
-        case "four":
-            return 4
-        case "five":
-            return 5
-        case "six":
-            return 6
-        case "seven":
-            return 7
-        case "eight":
-            return 8
-        case "nine":
-            return 9
-
-
-class Calibration:
-    def __init__(self, document):
-        self.total_values: int = 0
-        self.lines = []
-
-        for line in document:
-            c_line = CalibrationLine(line)
-            self.total_values += c_line.calibration_value
-
-
+@dataclasses.dataclass
 class CalibrationLine:
-    def __init__(self, document_line: str):
-        self.calibration_value: int = 0
+    """A single line from the elves' calibration document. Used to find a
+    calibration value.
+    """
 
-        m = re.findall(
-            r"(\d|(?:one|two|three|four|five|six|seven|eight|nine)){1}", document_line
-        )
-        self.first_digit: int = int(m[0]) if m[0].isnumeric() else word_to_int(m[0])
-        self.last_digit: int = int(m[-1]) if m[-1].isnumeric() else word_to_int(m[-1])
-
-        self.calibration_value = int(f"{self.first_digit}{self.last_digit}")
+    calibration_value: int = 0
+    document_line: str = None
 
 
-calibration = Calibration(calibration_doc)
-print(calibration.total_values)
+@dataclasses.dataclass
+class Calibration:
+    """A calibration document made by the north pole elves to guide us on our
+    mission to fix global snow production.
+    """
+
+    total_values: int = 0
+    lines: list = None
+
+
+def calculate_line(document_line: str) -> CalibrationLine:
+    """Creates and returns a line of the calibration document, calculating
+    the value for the line.
+
+    Args:
+        document_line (str): the string pulled from the calibration input.
+
+    Returns:
+        calibration_line (CalibrationLine): the calculated calibration line.
+    """
+    calibration_line = CalibrationLine
+    calibration_line.document_line = document_line
+
+    m = re.findall(
+        r"(\d|(?:one|two|three|four|five|six|seven|eight|nine)){1}", document_line
+    )
+
+    first_digit: int = int(m[0]) if m[0].isnumeric() else STRINGS_TO_NUMBERS.get(m[0])
+    last_digit: int = int(m[-1]) if m[-1].isnumeric() else STRINGS_TO_NUMBERS.get(m[-1])
+
+    calibration_line.calibration_value = int(f"{first_digit}{last_digit}")
+
+    return calibration_line
+
+
+def ingest(document: list[str]) -> Calibration:
+    """Creates and returns a calibration document.
+
+    Args:
+        document (list[str]): the raw data that will make up the calibration.
+
+    Returns:
+        Calibration: ingested calibration document that has been parsed.
+    """
+
+    calibration = Calibration
+
+    for line in document:
+        calibration_line = calculate_line(line)
+        calibration.total_values += calibration_line.calibration_value
+
+    return calibration
+
+
+Calibration = ingest(CALIBRATION_DOC)
+print(Calibration.total_values)
