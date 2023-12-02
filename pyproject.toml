@@ -13,6 +13,7 @@ data-structures = {path = "/Users/elliotvoris/Dev/experiments/data-structures", 
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.0.2"
+mypy = "^1.7.1"
 
 [build-system]
 requires = ["poetry-core"]
