@@ -1,14 +1,15 @@
 #!/usr/bin/env python
 """Day 01 of 2023 Advent of Code."""
 
-from dataclasses import dataclass, field
 import os
 import re
+
+from dataclasses import dataclass, field
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
 SAMPLE_DATA: bool = False
-CALIBRATION_DOC: list[str] = []
+CONTENTS: list[str] = []
 
 STRINGS_TO_NUMBERS: dict[str, int] = {
     "one": 1,
@@ -27,7 +28,7 @@ with open(
     "r",
     encoding="utf-8",
 ) as f:
-    CALIBRATION_DOC = f.read().splitlines()
+    CONTENTS = f.read().splitlines()
 
 
 @dataclass
@@ -74,5 +75,5 @@ class Calibration:
         return sum(cl.calibration_value for cl in self.lines)
 
 
-calibration = Calibration([CalibrationLine(line) for line in CALIBRATION_DOC])
+calibration = Calibration([CalibrationLine(line) for line in CONTENTS])
 print(calibration.total_values())
