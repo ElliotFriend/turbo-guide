@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Day 02 of 2023 Advent of Code."""
 
 import os
 
@@ -6,8 +7,10 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 
 SAMPLE_DATA = True
 
-contents = None
+CONTENTS = None
 with open(
-    os.path.join(__location__, f'{"sample" if SAMPLE_DATA else "input"}.txt'), "r"
+    os.path.join(__location__, f'{"sample" if SAMPLE_DATA else "input"}.txt'),
+    "r",
+    encoding="utf-8",
 ) as f:
-    contents = f.read().splitlines()
+    CONTENTS = f.read().splitlines()
