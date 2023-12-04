@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Day 02 of 2023 Advent of Code."""
+"""Day 24 of 2023 Advent of Code."""
 
 import os
 
