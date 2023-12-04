@@ -68,16 +68,18 @@ class Scratchcard:
 
 cards: list[Scratchcard] = []
 
-for i, card in enumerate(CONTENTS):
-    [card_details, card_numbers] = card.split(":")
+for i, line in enumerate(CONTENTS):
+    [card_details, card_numbers] = line.split(":")
     [winners, possessed] = card_numbers.split("|")
-    cards.append(
-        Scratchcard(
-            id=re.search(r"\d+$", card_details).group(),
-            winning_numbers=[int(n) for n in winners.strip().split(" ") if n],
-            numbers_you_have=[int(n) for n in possessed.strip().split(" ") if n],
+    card_id = re.search(r"\d+$", card_details)
+    if card_id:
+        cards.append(
+            Scratchcard(
+                id=int(card_id.group()),
+                winning_numbers=[int(n) for n in winners.strip().split(" ") if n],
+                numbers_you_have=[int(n) for n in possessed.strip().split(" ") if n],
+            )
         )
-    )
 
 
 for i, card in enumerate(cards):
