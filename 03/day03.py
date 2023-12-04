@@ -6,7 +6,7 @@ import re
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-SAMPLE_DATA: bool = True
+SAMPLE_DATA: bool = False
 CONTENTS: list[str] = []
 PART_NUMBERS_SUM = 0
 GEAR_RATIOS_SUM = 0
@@ -22,7 +22,7 @@ with open(
 for i, line in enumerate(CONTENTS):
     mi1 = re.finditer(r"\d+", line)
     for m in mi1:
-        if m.group:
+        if m.group():
             start = 0 if m.start() == 0 else m.start() - 1
             end = len(line) if m.end() == len(line) else m.end() + 1
             m1 = [] if i == 0 else re.findall(r"[^\d\.]", CONTENTS[i - 1][start:end])
@@ -37,14 +37,14 @@ for i, line in enumerate(CONTENTS):
 
     mi2 = re.finditer(r"\*", line)
     for m in mi2:
-        if m.group:
+        if m.group():
             adjacent_parts = []
             coords = (m.start(), i)
 
             # check the previous line
             if i > 0:
-                m1 = re.finditer(r"\d+", CONTENTS[i - 1])
-                for m11 in m1:
+                m1a = re.finditer(r"\d+", CONTENTS[i - 1])
+                for m11 in m1a:
                     if coords[0] >= m11.start() - 1 and coords[0] <= m11.end():
                         adjacent_parts.append(int(m11.group()))
 
@@ -58,8 +58,8 @@ for i, line in enumerate(CONTENTS):
 
             # check the next line
             if i < len(CONTENTS):
-                m3 = re.finditer(r"\d+", CONTENTS[i + 1])
-                for m33 in m3:
+                m3a = re.finditer(r"\d+", CONTENTS[i + 1])
+                for m33 in m3a:
                     if coords[0] >= m33.start() - 1 and coords[0] <= m33.end():
                         adjacent_parts.append(int(m33.group()))
 
