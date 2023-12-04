@@ -8,8 +8,8 @@ __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file
 
 SAMPLE_DATA: bool = False
 CONTENTS: list[str] = []
-PART_NUMBERS_SUM = 0
-GEAR_RATIOS_SUM = 0
+PART_NUMBERS_SUM: int = 0
+GEAR_RATIOS_SUM: int = 0
 
 with open(
     os.path.join(__location__, f'{"sample" if SAMPLE_DATA else "input"}.txt'),
@@ -20,48 +20,56 @@ with open(
 
 
 for i, line in enumerate(CONTENTS):
-    mi1 = re.finditer(r"\d+", line)
-    for m in mi1:
-        if m.group():
-            start = 0 if m.start() == 0 else m.start() - 1
-            end = len(line) if m.end() == len(line) else m.end() + 1
-            m1 = [] if i == 0 else re.findall(r"[^\d\.]", CONTENTS[i - 1][start:end])
-            m2 = re.findall(r"[^\d\.]", line[start:end])
-            m3 = (
+    digit_matches_iter = re.finditer(r"\d+", line)
+    for digit_match in digit_matches_iter:
+        if digit_match.group():
+            start = 0 if digit_match.start() == 0 else digit_match.start() - 1
+            end = len(line) if digit_match.end() == len(line) else digit_match.end() + 1
+            symbol_match_prev = (
+                [] if i == 0 else re.findall(r"[^\d\.]", CONTENTS[i - 1][start:end])
+            )
+            symbol_match_curr = re.findall(r"[^\d\.]", line[start:end])
+            symbol_match_next = (
                 []
                 if i == len(CONTENTS) - 1
                 else re.findall(r"[^\d\.]", CONTENTS[i + 1][start:end])
             )
-            if m1 or m2 or m3:
-                PART_NUMBERS_SUM += int(m.group())
+            if symbol_match_prev or symbol_match_curr or symbol_match_next:
+                PART_NUMBERS_SUM += int(digit_match.group())
 
-    mi2 = re.finditer(r"\*", line)
-    for m in mi2:
-        if m.group():
+    star_matches_iter = re.finditer(r"\*", line)
+    for star_match in star_matches_iter:
+        if star_match.group():
             adjacent_parts = []
-            coords = (m.start(), i)
+            coords = (star_match.start(), i)
 
             # check the previous line
             if i > 0:
-                m1a = re.finditer(r"\d+", CONTENTS[i - 1])
-                for m11 in m1a:
-                    if coords[0] >= m11.start() - 1 and coords[0] <= m11.end():
-                        adjacent_parts.append(int(m11.group()))
+                adjacent_matches_iter_prev = re.finditer(r"\d+", CONTENTS[i - 1])
+                for adjacent_match_prev in adjacent_matches_iter_prev:
+                    if (
+                        coords[0] >= adjacent_match_prev.start() - 1
+                        and coords[0] <= adjacent_match_prev.end()
+                    ):
+                        adjacent_parts.append(int(adjacent_match_prev.group()))
 
             # check same line
-            m2a = re.search(r"\d+$", line[: coords[0]])
-            if m2a:
-                adjacent_parts.append(int(m2a.group()))
-            m2b = re.search(r"^\d+", line[coords[0] + 1 :])
-            if m2b:
-                adjacent_parts.append(int(m2b.group()))
+            adjacent_match_curr_left = re.search(r"\d+$", line[: coords[0]])
+            if adjacent_match_curr_left:
+                adjacent_parts.append(int(adjacent_match_curr_left.group()))
+            adjacent_match_curr_right = re.search(r"^\d+", line[coords[0] + 1 :])
+            if adjacent_match_curr_right:
+                adjacent_parts.append(int(adjacent_match_curr_right.group()))
 
             # check the next line
             if i < len(CONTENTS):
-                m3a = re.finditer(r"\d+", CONTENTS[i + 1])
-                for m33 in m3a:
-                    if coords[0] >= m33.start() - 1 and coords[0] <= m33.end():
-                        adjacent_parts.append(int(m33.group()))
+                adjacent_matches_iter_next = re.finditer(r"\d+", CONTENTS[i + 1])
+                for adjacent_match_next in adjacent_matches_iter_next:
+                    if (
+                        coords[0] >= adjacent_match_next.start() - 1
+                        and coords[0] <= adjacent_match_next.end()
+                    ):
+                        adjacent_parts.append(int(adjacent_match_next.group()))
 
             if len(adjacent_parts) == 2:
                 GEAR_RATIOS_SUM += adjacent_parts[0] * adjacent_parts[1]
