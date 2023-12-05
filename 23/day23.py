@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """Day 23 of 2023 Advent of Code."""
 
 import os

@@ -1,11 +1,10 @@
-#!/usr/bin/env python
 """Day 05 of 2023 Advent of Code."""
 
 import os
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-SAMPLE_DATA: bool = True
+SAMPLE_DATA: bool = True  # part 1: something, part 2: something
 CONTENTS: list[str] = []
 
 with open(
