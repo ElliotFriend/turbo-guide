@@ -38,40 +38,39 @@ for i, line in enumerate(CONTENTS):
 
     star_matches_iter = re.finditer(r"\*", line)
     for star_match in star_matches_iter:
-        if star_match.group():
-            adjacent_parts = []
-            coords = (star_match.start(), i)
+        adjacent_parts = []
+        coords = (star_match.start(), i)
 
-            # check the previous line
-            if i > 0:
-                adjacent_matches_iter_prev = re.finditer(r"\d+", CONTENTS[i - 1])
-                for adjacent_match_prev in adjacent_matches_iter_prev:
-                    if (
-                        coords[0] >= adjacent_match_prev.start() - 1
-                        and coords[0] <= adjacent_match_prev.end()
-                    ):
-                        adjacent_parts.append(int(adjacent_match_prev.group()))
+        # check the previous line
+        if i > 0:
+            adjacent_matches_iter_prev = re.finditer(r"\d+", CONTENTS[i - 1])
+            for adjacent_match_prev in adjacent_matches_iter_prev:
+                if (
+                    coords[0] >= adjacent_match_prev.start() - 1
+                    and coords[0] <= adjacent_match_prev.end()
+                ):
+                    adjacent_parts.append(int(adjacent_match_prev.group()))
 
-            # check same line
-            adjacent_match_curr_left = re.search(r"\d+$", line[: coords[0]])
-            if adjacent_match_curr_left:
-                adjacent_parts.append(int(adjacent_match_curr_left.group()))
-            adjacent_match_curr_right = re.search(r"^\d+", line[coords[0] + 1 :])
-            if adjacent_match_curr_right:
-                adjacent_parts.append(int(adjacent_match_curr_right.group()))
+        # check same line
+        adjacent_match_curr_left = re.search(r"\d+$", line[: coords[0]])
+        if adjacent_match_curr_left:
+            adjacent_parts.append(int(adjacent_match_curr_left.group()))
+        adjacent_match_curr_right = re.search(r"^\d+", line[coords[0] + 1 :])
+        if adjacent_match_curr_right:
+            adjacent_parts.append(int(adjacent_match_curr_right.group()))
 
-            # check the next line
-            if i < len(CONTENTS):
-                adjacent_matches_iter_next = re.finditer(r"\d+", CONTENTS[i + 1])
-                for adjacent_match_next in adjacent_matches_iter_next:
-                    if (
-                        coords[0] >= adjacent_match_next.start() - 1
-                        and coords[0] <= adjacent_match_next.end()
-                    ):
-                        adjacent_parts.append(int(adjacent_match_next.group()))
+        # check the next line
+        if i < len(CONTENTS):
+            adjacent_matches_iter_next = re.finditer(r"\d+", CONTENTS[i + 1])
+            for adjacent_match_next in adjacent_matches_iter_next:
+                if (
+                    coords[0] >= adjacent_match_next.start() - 1
+                    and coords[0] <= adjacent_match_next.end()
+                ):
+                    adjacent_parts.append(int(adjacent_match_next.group()))
 
-            if len(adjacent_parts) == 2:
-                GEAR_RATIOS_SUM += adjacent_parts[0] * adjacent_parts[1]
+        if len(adjacent_parts) == 2:
+            GEAR_RATIOS_SUM += adjacent_parts[0] * adjacent_parts[1]
 
 print(f"Part 1: {PART_NUMBERS_SUM}")
 # 533775
