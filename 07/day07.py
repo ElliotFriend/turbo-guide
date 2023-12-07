@@ -64,6 +64,10 @@ with open(
 
 @dataclass
 class CamelCardsHand:
+    """A hand of Camel Cards. Includes the string of cards in the hand (also a
+    numeric representation of those cards) and the bid offered for the hand.
+    """
+
     hand: list[str] = field(default_factory=lambda: [])
     bid: int = 0
     jokers: bool = False
@@ -74,24 +78,24 @@ class CamelCardsHand:
 
     def __post_init__(self) -> None:
         self.numeric_hand = (
-            [CARD_STRENGTHS_JOKER_DICT[c] for c in hand]
+            [CARD_STRENGTHS_JOKER_DICT[c] for c in self.hand]
             if self.jokers
-            else [CARD_STRENGTHS_DICT[c] for c in hand]
+            else [CARD_STRENGTHS_DICT[c] for c in self.hand]
         )
-        hand_dict = {i: self.hand.count(i) for i in self.hand}
+
+        hand_dict: dict[str, int] = {i: self.hand.count(i) for i in self.hand}
         num_jokers: int = (
             (hand_dict["J"] if "J" in hand_dict else 0) if self.jokers else 0
         )
-        # print(f"num_jokers={num_jokers} hand_dict={hand_dict}")
-        for c in sorted(hand_dict, key=hand_dict.get, reverse=True):
+
+        for c in sorted(hand_dict, key=hand_dict.__getitem__, reverse=True):
             card_count = hand_dict[c]
-            # if c == 'J':
-            #     continue
             if self.jokers:
                 if c == "J" and len(hand_dict) > 1:
                     continue
                 if not self.hand_type and card_count < 5 and c != "J":
                     card_count += num_jokers
+
             match card_count:
                 case 5:
                     self.hand_type = "five_kind"
@@ -117,25 +121,45 @@ class CamelCardsHand:
         return self.numeric_hand < other.numeric_hand
 
     def hand_strength(self) -> int:
+        """Gets the relative hand strength of this hand's cards based on its
+        type (i.e., "one_pair", "full_house", etc.)
+
+        Returns:
+            int: relative strength of this hand (0-6)
+        """
         return HAND_STRENGTHS_DICT[self.hand_type]
 
 
 @dataclass
 class CamelCardsList:
+    """A list of hand/bid pairs that make up a game of Camel Cards."""
+
     hands_list: list[CamelCardsHand] = field(default_factory=lambda: [])
 
     def calculate_winnings(self) -> int:
-        return sum([h.bid * h.hand_rank for h in self.hands_list])
+        """Get the total winnings for the hands/bids in the list.
+
+        Returns:
+            int: sum total of all winnings in this game
+        """
+        return sum(h.bid * h.hand_rank for h in self.hands_list)
 
     def order_by_card_strength(self) -> None:
+        """Order the hands in the list by relative card strength."""
         self.hands_list.sort()
 
     def order_by_hand_type(self) -> None:
+        """Order the hands in the list by hand type (five of a kind is the best,
+        then four of a kind, etc.)
+        """
         self.hands_list.sort(key=methodcaller("hand_strength"))
 
     def assign_real_rankings(self) -> None:
-        for i, hand in enumerate(self.hands_list):
-            hand.hand_rank = i + 1
+        """Assign an actual ranking for each hand according to its place in the
+        sorted (twice) list.
+        """
+        for hand_index, camel_card_hand in enumerate(self.hands_list):
+            camel_card_hand.hand_rank = hand_index + 1
 
     def __post_init__(self) -> None:
         self.order_by_card_strength()
@@ -143,30 +167,26 @@ class CamelCardsList:
         self.assign_real_rankings()
 
 
-camel_cards_list = []
-
-for i, hand_and_bid in enumerate(CONTENTS):
-    [hand, bid] = hand_and_bid.split()
-    camel_cards_list.append(CamelCardsHand(hand=list(hand), bid=int(bid)))
-
-camel_cards_list = CamelCardsList(camel_cards_list)
+camel_cards_list: CamelCardsList = CamelCardsList(
+    list(
+        CamelCardsHand(hand=list(hand), bid=int(bid))
+        for hand, bid in (
+            hand_and_bid.split() for _, hand_and_bid in enumerate(CONTENTS)
+        )
+    )
+)
 
 print(f"Part 1: {camel_cards_list.calculate_winnings()}")
 # 250058342
 
-camel_cards_list = []
-
-for i, hand_and_bid in enumerate(CONTENTS):
-    [hand, bid] = hand_and_bid.split()
-    camel_cards_list.append(
-        CamelCardsHand(
-            hand=list(hand),
-            bid=int(bid),
-            jokers=True,
+camel_cards_list = CamelCardsList(
+    list(
+        CamelCardsHand(hand=list(hand), bid=int(bid), jokers=True)
+        for hand, bid in (
+            hand_and_bid.split() for _, hand_and_bid in enumerate(CONTENTS)
         )
     )
-
-camel_cards_list = CamelCardsList(camel_cards_list)
+)
 
 print(f"Part 2: {camel_cards_list.calculate_winnings()}")
 # 250506580
