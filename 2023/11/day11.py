@@ -18,14 +18,16 @@ with open(
     CONTENTS = f.read().splitlines()
 # print(CONTENTS)
 
+
 @dataclass
 class Galaxy:
     coords: tuple[int, int] = ()
 
     def manhattan_dist(self, other_coords: tuple[int, int]) -> int:
         # return sum(abs(a - b) for a, b in zip(self.coords, other_coords))
-        return abs(self.coords[0] - other_coords[0]) + abs(self.coords[1] - other_coords[1])
-
+        return abs(self.coords[0] - other_coords[0]) + abs(
+            self.coords[1] - other_coords[1]
+        )
 
 
 @dataclass
@@ -39,14 +41,14 @@ class GalaxyImage:
         # first do the rows
         for _, row in enumerate(self.og_image):
             self.expanded_image.append(row)
-            if not '#' in row:
+            if not "#" in row:
                 for i in range(self.exp_val - 1 or 1):
                     self.expanded_image.append(row)
 
         # then do the cols
         empty_cols: list[int] = []
         for i, _ in enumerate(self.expanded_image[0]):
-            if not '#' in self.col(i):
+            if not "#" in self.col(i):
                 empty_cols.append(i)
 
         empty_cols.sort(reverse=True)
@@ -55,12 +57,14 @@ class GalaxyImage:
 
     def discover_galaxies(self) -> None:
         for i, row in enumerate(self.expanded_image):
-            if '#' in row:
-                for gal in re.finditer(r'#', row):
+            if "#" in row:
+                for gal in re.finditer(r"#", row):
                     self.galaxies.append(Galaxy((i, gal.start())))
 
     def row(self, index: int) -> str:
-        return self.expanded_image[index] if self.expanded_image else self.og_image[index]
+        return (
+            self.expanded_image[index] if self.expanded_image else self.og_image[index]
+        )
 
     def col(self, index: int) -> str:
         image_to_use = self.expanded_image if self.expanded_image else self.og_image
@@ -68,11 +72,13 @@ class GalaxyImage:
         for i, row in enumerate(image_to_use):
             return_list.append(image_to_use[i][index])
 
-        return ''.join(return_list)
+        return "".join(return_list)
 
     def insert_empty_col(self, index: int) -> None:
         for i, row in enumerate(self.expanded_image):
-            self.expanded_image[i] = f"{row[:index]}{'.' * (self.exp_val - 1 or 1)}{row[index:]}"
+            self.expanded_image[i] = (
+                f"{row[:index]}{'.' * (self.exp_val - 1 or 1)}{row[index:]}"
+            )
 
     def __post_init__(self) -> None:
         self.expand_universe()

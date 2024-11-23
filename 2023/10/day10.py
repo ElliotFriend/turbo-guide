@@ -39,7 +39,10 @@ with open(
 ) as f:
     CONTENTS = f.read().splitlines()
 
-def move_direction(current_position: tuple[int, int], direction: str) -> tuple[int, int]:
+
+def move_direction(
+    current_position: tuple[int, int], direction: str
+) -> tuple[int, int]:
     match direction:
         case "n":
             return (current_position[0] - 1, current_position[1])
@@ -48,16 +51,18 @@ def move_direction(current_position: tuple[int, int], direction: str) -> tuple[i
         case "s":
             return (current_position[0] + 1, current_position[1])
         case "w":
-            return(current_position[0], current_position[1] - 1)
+            return (current_position[0], current_position[1] - 1)
+
 
 for i, y in enumerate(CONTENTS):
     for j, x in enumerate(y):
-        if x == 'S':
+        if x == "S":
             CURR_POS = (i, j)
             break
     else:
         continue
     break
+
 
 def find_adjacent_characters(current_position: tuple[int, int]) -> dict[str, str]:
     adjacent_chars: dict[str, str] = {}
@@ -65,6 +70,7 @@ def find_adjacent_characters(current_position: tuple[int, int]) -> dict[str, str
         adjacent_coords = move_direction(current_position, direction)
         adjacent_chars[direction] = CONTENTS[adjacent_coords[0]][adjacent_coords[1]]
     return adjacent_chars
+
 
 def find_valid_options(current_position: tuple[int, int]) -> list[str]:
     all_options = find_adjacent_characters(current_position)
@@ -88,17 +94,16 @@ def find_valid_options(current_position: tuple[int, int]) -> list[str]:
     return valid_options
 
 
-
 # print(f"Found S!! (x={START_COL}, y={START_ROW})")
 # print(f"See? Here it is: {CONTENTS[START_ROW][START_COL]}")
 # print(f"x={j} y={i}")
 
 # while CURR_PIPE != "S":
 while True:
-    if CURR_PIPE == 'S':
+    if CURR_PIPE == "S":
         break
-    elif CURR_PIPE == '':
-        valid_options = ['e', 's'] if SAMPLE_DATA else ['n', 'e']
+    elif CURR_PIPE == "":
+        valid_options = ["e", "s"] if SAMPLE_DATA else ["n", "e"]
     else:
         valid_options = VALID_MOVES[CURR_PIPE].copy()
 
