@@ -5,15 +5,16 @@ description = "advent of code 2023"
 authors = ["Elliot Voris <elliot@voris.me>"]
 license = "MIT"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.12"
-data-structures = {path = "/Users/elliotvoris/Dev/experiments/data-structures", develop = false}
+python = "^3.13"
+data-structures = {path = "/Users/elliotvoris/Dev/data-structures", develop = false}
 
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.0.2"
-mypy = "^1.7.1"
+pylint = "^3.3.1"
+mypy = "^1.13.0"
 
 [build-system]
 requires = ["poetry-core"]
